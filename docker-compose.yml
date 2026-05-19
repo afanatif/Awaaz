@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  awaz-backend:
+    build: .
+    container_name: awaz-backend
+    ports:
+      - "5050:5050"
+    environment:
+      - AWAZ_HOST=0.0.0.0
+      - AWAZ_PORT=5050
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - HF_API_KEY=${HF_API_KEY}
+      - NEWSAPI_KEY=${NEWSAPI_KEY}
+      - REDDIT_CLIENT_ID=${REDDIT_CLIENT_ID}
+      - REDDIT_CLIENT_SECRET=${REDDIT_CLIENT_SECRET}
+      - REDDIT_USER_AGENT=${REDDIT_USER_AGENT}
+      - EXCHANGE_RATE_API_KEY=${EXCHANGE_RATE_API_KEY}
+      - WHISPER_MODEL=${WHISPER_MODEL:-base}
+    volumes:
+      - ./output:/app/output
+      - ./logs:/app/logs
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5050/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3

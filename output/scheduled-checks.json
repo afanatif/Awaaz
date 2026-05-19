@@ -1,0 +1,12 @@
+{
+  "monitor_target": "Market Trend Monitoring",
+  "sector": "metals and mining",
+  "next_check": "2026-05-20T12:23:58.559770+00:00",
+  "frequency": "daily",
+  "metrics_to_track": [
+    "price_change",
+    "news_sentiment",
+    "volume"
+  ],
+  "created": "2026-05-19T12:23:58.559770+00:00"
+}

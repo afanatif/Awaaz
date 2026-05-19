@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Awaz - Explainable Intelligence Pipeline</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Sora:wght@500;600;700&family=Noto+Nastaliq+Urdu:wght@400;600&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js"></script>
+</head>
+<body>
+    <div class="bg-grid" aria-hidden="true"></div>
+    <div class="bg-orb orb-1" aria-hidden="true"></div>
+    <div class="bg-orb orb-2" aria-hidden="true"></div>
+    <div class="app-container">
+        <!-- Header -->
+        <header>
+            <div class="logo">Awaz <span>Pipeline</span></div>
+            <div class="status-indicator">
+                <div class="dot"></div>
+                <span id="system-status">Ready</span>
+            </div>
+        </header>
+
+        <section class="live-banner" id="live-banner">Idle — waiting for input.</section>
+
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <h1 class="hero-title">Awaz Pipeline</h1>
+            <p class="hero-subtitle">Multi-Agent Intelligence for High-Stakes Decisions</p>
+            <p class="hero-description">Before you commit time, capital, or legal risk, Awaz validates claims against real public signals. One input in. Multi-agent verdict out — with source-by-source contradiction reasoning and a complete audit trail.</p>
+        </section>
+
+        <!-- How to Use Section -->
+        <section class="panel how-to-section">
+            <h2>How to Use</h2>
+            <div class="how-to-steps">
+                <div class="how-to-step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>Enter a Claim</h3>
+                        <p>Type a business claim in the input field (e.g., "investing in silver is a good idea") or hold the microphone to speak your claim.</p>
+                    </div>
+                </div>
+                <div class="how-to-step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>Watch the Agents Work</h3>
+                        <p>Awaz's multi-agent pipeline processes your claim: Ingestion → Analyst → Strategist → Executor → Monitor. Each agent specializes in a specific task.</p>
+                    </div>
+                </div>
+                <div class="how-to-step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>Get the Verdict</h3>
+                        <p>Receive a detailed verdict with source-by-source contradiction reasoning, action recommendations, and a complete audit trail.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Feature Highlights -->
+        <section class="panel features-section">
+            <h2>What Awaz Does</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <h3>📰 Cross-References 8 Sources</h3>
+                    <p>News, Market Data, Reddit, Regulatory/Macro, Business Recorder, PSX, Dawn Business, Profit Pakistan.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔍 Contradiction Detection</h3>
+                    <p>Analyst agent detects contradictions and provides detailed reasoning for each source.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📊 Action Recommendations</h3>
+                    <p>Strategist agent generates action chains with clear "what/why/based on what" explanations.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📝 Complete Audit Trail</h3>
+                    <p>Every step is logged with timestamps, agent names, and detailed summaries for full transparency.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🎯 Real-Time Processing</h3>
+                    <p>Watch the pipeline execute in real-time with live status updates and agent activation.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🌐 Bilingual Output</h3>
+                    <p>Decision summaries available in English and Urdu for broader accessibility.</p>
+                </div>
+            </div>
+        </section>
+
+        <main>
+            <!-- Input Section -->
+            <section class="panel input-section">
+                <h2>Start Investigation</h2>
+                <div class="input-controls">
+                    <button id="record-btn" class="mic-btn">
+                        <svg viewBox="0 0 24 24" width="32" height="32" stroke="currentColor" stroke-width="2" fill="none"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
+                        <span>Hold to Speak</span>
+                    </button>
+                    <div class="text-input-wrapper">
+                        <input type="text" id="text-input" placeholder="Or type a claim (e.g., 'PSX banking rally will continue next quarter')...">
+                        <button id="send-btn">Send</button>
+                    </div>
+                </div>
+                <div id="transcription-display" class="hidden"></div>
+                <div class="sources-wrap">
+                    <span class="sources-label">Sources</span>
+                    <div id="source-chips" class="source-chips"></div>
+                </div>
+            </section>
+
+            <!-- Agents Pipeline Tracker -->
+            <section class="panel pipeline-section">
+                <h2>How Awaz Works</h2>
+                <div class="agent-cards">
+                    <div class="agent-card" id="agent-ingestion">
+                        <div class="icon">1</div>
+                        <h3>Ingestion</h3>
+                        <p>Whisper & Gemini</p>
+                    </div>
+                    <div class="connector"></div>
+                    <div class="agent-card" id="agent-analyst">
+                        <div class="icon">2</div>
+                        <h3>Analyst</h3>
+                        <p>Contradiction</p>
+                    </div>
+                    <div class="connector"></div>
+                    <div class="agent-card" id="agent-strategist">
+                        <div class="icon">3</div>
+                        <h3>Strategist</h3>
+                        <p>Action Chain</p>
+                    </div>
+                    <div class="connector"></div>
+                    <div class="agent-card" id="agent-executor">
+                        <div class="icon">4</div>
+                        <h3>Executor</h3>
+                        <p>Simulation</p>
+                    </div>
+                    <div class="connector"></div>
+                    <div class="agent-card" id="agent-monitor">
+                        <div class="icon">5</div>
+                        <h3>Monitor</h3>
+                        <p>Outcome</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Two-column layout for results -->
+            <div class="results-grid">
+                
+                <!-- Left Column: Verdict & Actions -->
+                <div class="left-col">
+                    <section class="panel source-intel-section hidden" id="source-intel-panel">
+                        <h2>Why This Verdict</h2>
+                        <div id="source-intel-list" class="source-intel-list"></div>
+                    </section>
+
+                    <section class="panel verdict-section hidden" id="verdict-panel">
+                        <h2>Verdict</h2>
+                        <div class="verdict-display">
+                            <div class="meter-wrapper">
+                                <svg viewBox="0 0 100 50" class="gauge">
+                                    <path class="gauge-bg" d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke-width="10"/>
+                                    <path class="gauge-fill" id="gauge-fill" d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke-width="10" stroke-dasharray="125" stroke-dashoffset="125"/>
+                                </svg>
+                                <div class="verdict-text" id="verdict-text">Pending</div>
+                            </div>
+                            <div class="verdict-details">
+                                <p id="verdict-explanation"></p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="panel actions-section hidden" id="actions-panel">
+                        <h2>Action Chain</h2>
+                        <div id="actions-list" class="actions-list"></div>
+                    </section>
+                </div>
+
+                <!-- Right Column: Logs & Dashboard -->
+                <div class="right-col">
+                    <section class="panel dashboard-section hidden" id="dashboard-panel">
+                        <h2>Decision Dashboard</h2>
+                        <div class="metrics-grid">
+                            <div class="metric">
+                                <span class="label">Allocation</span>
+                                <div class="values">
+                                    <span class="before" id="alloc-before">0%</span>
+                                    <span class="arrow">→</span>
+                                    <span class="after" id="alloc-after">0%</span>
+                                </div>
+                            </div>
+                            <div class="metric">
+                                <span class="label">Risk Score</span>
+                                <div class="values">
+                                    <span class="before" id="risk-before">5.0</span>
+                                    <span class="arrow">→</span>
+                                    <span class="after" id="risk-after">5.0</span>
+                                </div>
+                            </div>
+                            <div class="metric">
+                                <span class="label">Tokens Used</span>
+                                <span class="single-val" id="token-val">0</span>
+                            </div>
+                            <div class="metric">
+                                <span class="label">Total Latency</span>
+                                <span class="single-val" id="latency-val">0ms</span>
+                            </div>
+                        </div>
+                        <div class="summary-box">
+                            <p id="summary-en" class="en-text"></p>
+                            <p id="summary-ur" class="ur-text"></p>
+                        </div>
+                    </section>
+
+                    <section class="panel log-section">
+                        <div class="log-header">
+                            <h2>Audit Trail</h2>
+                            <div class="log-filters">
+                                <span class="filter active" data-agent="all">All</span>
+                                <span class="filter" data-agent="ingestion">Ingestion</span>
+                                <span class="filter" data-agent="analyst">Analyst</span>
+                                <span class="filter" data-agent="strategist">Strategist</span>
+                                <span class="filter" data-agent="executor">Executor</span>
+                                <span class="filter" data-agent="monitor">Monitor</span>
+                            </div>
+                        </div>
+                        <div id="log-console" class="log-console"></div>
+                    </section>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>

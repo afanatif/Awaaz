@@ -1,0 +1,16 @@
+google-genai
+huggingface_hub
+requests
+python-dotenv
+openai-whisper
+newsapi-python
+yfinance
+praw
+beautifulsoup4
+lxml
+flask
+flask-cors
+flask-socketio
+reportlab
+pandas
+numpy

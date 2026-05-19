@@ -1,0 +1,33 @@
+{
+  "investigation_target": "Conduct Further Investigation",
+  "query_keywords": [
+    "metals and mining",
+    "analysis",
+    "outlook"
+  ],
+  "articles_found": 3,
+  "top_articles": [
+    {
+      "title": "Market analysis: metals and mining shows mixed signals amid global uncertainty",
+      "description": "Analysts are divided on the short-term outlook as multiple factors influence the market direction.",
+      "source_name": "Reuters (simulated)",
+      "published_at": "2025-01-15T10:00:00Z",
+      "url": "https://example.com/simulated"
+    },
+    {
+      "title": "OPEC+ discusses production targets as metals and mining demand fluctuates",
+      "description": "The organization is weighing supply adjustments in response to changing global demand patterns.",
+      "source_name": "Bloomberg (simulated)",
+      "published_at": "2025-01-14T08:30:00Z",
+      "url": "https://example.com/simulated2"
+    },
+    {
+      "title": "Pakistan's economic indicators show cautious optimism for metals and mining sector",
+      "description": "Government reports suggest stabilization but challenges remain in the current fiscal environment.",
+      "source_name": "Dawn (simulated)",
+      "published_at": "2025-01-13T12:00:00Z",
+      "url": "https://example.com/simulated3"
+    }
+  ],
+  "timestamp": "2026-05-19T12:23:58.178800+00:00"
+}

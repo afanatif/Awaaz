@@ -1,0 +1,31 @@
+services:
+  - type: web
+    name: awaz-backend
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: ./
+    plan: free
+    envVars:
+      - key: AWAZ_HOST
+        value: 0.0.0.0
+      - key: AWAZ_PORT
+        value: 5050
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: HF_API_KEY
+        sync: false
+      - key: NEWSAPI_KEY
+        sync: false
+      - key: REDDIT_CLIENT_ID
+        sync: false
+      - key: REDDIT_CLIENT_SECRET
+        sync: false
+      - key: REDDIT_USER_AGENT
+        value: awaz-intelligence-pipeline/1.0
+      - key: EXCHANGE_RATE_API_KEY
+        sync: false
+      - key: WHISPER_MODEL
+        value: base
+      - key: FLASK_DEBUG
+        value: false
+    healthCheckPath: /health
