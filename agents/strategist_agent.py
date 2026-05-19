@@ -194,7 +194,7 @@ class StrategistAgent:
         return actions
 
     def _build_strategist_reasoning(self, verdict: str, intent: dict, explanation: str, chain: list[dict], full_payload: dict) -> dict:
-        """Build detailed reasoning for each action: what, why, based on what."""
+        """Build detailed reasoning for each action: what, why, based on what, should_execute."""
         claim = intent.get("claim", "")
         sector = intent.get("sector", "")
         source_scores = full_payload.get("source_scores", {})
@@ -204,6 +204,9 @@ class StrategistAgent:
             atype = action.get("type", "")
             aname = action.get("name", "")
             desc = action.get("description", "")
+
+            # Determine if action should be executed
+            should_execute = self._should_execute_action(verdict, atype)
 
             # Build contextual reasoning
             what = f"Execute action: {aname} ({atype}). {desc}"
@@ -251,6 +254,7 @@ class StrategistAgent:
             based_on = "Based on: " + "; ".join(based_on_parts) + "."
 
             reasoning_by_action[f"action_{i}"] = {
+                "should_execute": should_execute,
                 "what": what,
                 "why": why,
                 "based_on": based_on,
@@ -259,6 +263,27 @@ class StrategistAgent:
             }
 
         return reasoning_by_action
+
+    def _should_execute_action(self, verdict: str, action_type: str) -> str:
+        """Determine if an action should be executed based on verdict and action type."""
+        # Actions that should execute regardless of verdict
+        always_execute = ["alert", "monitor", "investigate"]
+        
+        # Actions that should execute only on confirmed verdict
+        confirmed_only = ["proceed"]
+        
+        # Actions that should execute only on contradicted verdict
+        contradicted_only = ["halt", "hedge"]
+        
+        if action_type in always_execute:
+            return "Yes"
+        elif action_type in confirmed_only:
+            return "Yes" if verdict == "confirmed" else "No"
+        elif action_type in contradicted_only:
+            return "Yes" if verdict == "contradicted" else "No"
+        
+        # Default: execute for confirmed or partially confirmed
+        return "Yes" if verdict in ["confirmed", "partially_confirmed"] else "No"
 
     def _fallback_actions(self, verdict: str, intent: dict) -> list[dict]:
         """Generate fallback actions if Gemini parse fails."""

@@ -4,7 +4,7 @@
       "type": "header",
       "text": {
         "type": "plain_text",
-        "text": "\ud83d\udd14 Awaz Alert: Stakeholder Notification",
+        "text": "\ud83d\udd14 Awaz Alert: Alert Stakeholders",
         "emoji": true
       }
     },
@@ -12,14 +12,14 @@
       "type": "section",
       "text": {
         "type": "mrkdwn",
-        "text": "*Verdict:* contradicted\n*Sector:* metals and mining\n*Claim:* investing in silver is a good idea"
+        "text": "*Verdict:* contradicted\n*Sector:* investments and commodities\n*Claim:* comparing investment options"
       }
     },
     {
       "type": "section",
       "text": {
         "type": "mrkdwn",
-        "text": "*Action:* Notify all stakeholders about the contradictory verdict and the decision to halt investment plans in silver"
+        "text": "*Action:* Notify stakeholders about the potential contradiction in the comparison claims and the decision to halt investment decisions"
       }
     },
     {

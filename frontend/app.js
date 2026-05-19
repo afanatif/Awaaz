@@ -149,16 +149,19 @@ function renderStrategistReasoning(reasoningByAction) {
     const order = Object.keys(reasoningByAction).sort();
     order.forEach(key => {
         const r = reasoningByAction[key];
+        const shouldExecute = r.should_execute || 'No';
+        const isYes = shouldExecute.toLowerCase() === 'yes';
         const card = document.createElement('div');
         card.className = 'strategist-reasoning-item';
         card.innerHTML = `
             <div class="strategist-reasoning-head">
                 <span class="strategist-action-name">${escapeHtml(r.action_name || 'Action')}</span>
+                <span class="strategist-decision ${isYes ? 'yes' : 'no'}">${shouldExecute.toUpperCase()}</span>
                 <span class="badge type">${escapeHtml(r.action_type || 'unknown')}</span>
             </div>
             <div class="strategist-reasoning-body">
                 <div class="strategist-section"><strong>What to do:</strong> ${escapeHtml(r.what || '')}</div>
-                <div class="strategist-section"><strong>Why:</strong> ${escapeHtml(r.why || '')}</div>
+                <div class="strategist-section"><strong>Why ${shouldExecute.toLowerCase()}:</strong> ${escapeHtml(r.why || '')}</div>
                 <div class="strategist-section"><strong>Based on:</strong> ${escapeHtml(r.based_on || '')}</div>
             </div>
         `;
@@ -214,6 +217,9 @@ function appendLog(data) {
 
     div.innerHTML = html;
     logConsole.appendChild(div);
+
+    // Also add to summary panel
+    addAgentSummary(data);
     
     // Auto scroll if filtered
     if (currentFilter === 'all' || currentFilter === data.agent_name || isError) {
@@ -221,6 +227,95 @@ function appendLog(data) {
     } else {
         div.style.display = 'none';
     }
+}
+
+// Agent Summary Panel
+function addAgentSummary(data) {
+    if (!data.agent_name) return;
+
+    const summaryPanel = document.getElementById('agent-summary-panel');
+    if (!summaryPanel) return;
+
+    const agentName = data.agent_name;
+    const eventType = data.event_type;
+
+    // Create human-readable summary based on agent and event type
+    const summary = generateHumanReadableSummary(agentName, eventType, data);
+
+    if (!summary) return;
+
+    // Update or create summary card for this agent
+    let card = document.getElementById(`summary-${agentName}`);
+    if (!card) {
+        card = document.createElement('div');
+        card.id = `summary-${agentName}`;
+        card.className = 'agent-summary-card';
+        summaryPanel.appendChild(card);
+    }
+
+    const status = getEventStatus(eventType);
+    card.innerHTML = `
+        <div class="summary-header">
+            <span class="summary-agent">${agentName.charAt(0).toUpperCase() + agentName.slice(1)}</span>
+            <span class="summary-status ${status}">${status}</span>
+        </div>
+        <div class="summary-body">${summary}</div>
+    `;
+}
+
+function generateHumanReadableSummary(agent, event, data) {
+    const summaries = {
+        ingestion: {
+            'transcription_started': 'Transcribing voice input...',
+            'transcription_completed': 'Voice transcribed successfully',
+            'intent_extraction_started': 'Extracting intent and keywords from input...',
+            'intent_extraction_completed': 'Intent and keywords extracted',
+            'source_fetch_started': 'Fetching data from sources...',
+            'source_fetch_completed': 'Data fetched from all sources',
+            'source_fetch_failed': 'Some sources unavailable, using fallbacks',
+            'ingestion_completed': 'Input processing complete'
+        },
+        analyst: {
+            'analysis_started': 'Analyzing claim against sources...',
+            'analysis_completed': 'Contradiction analysis complete',
+            'source_analysis_completed': 'Source analysis complete'
+        },
+        strategist: {
+            'strategy_generation_started': 'Generating action plan...',
+            'strategy_generation_completed': 'Action plan generated',
+            'action_generated': 'Action added to plan'
+        },
+        executor: {
+            'execution_started': 'Executing actions...',
+            'execution_completed': 'Action executed successfully',
+            'execution_failed': 'Action execution failed',
+            'executor_completed': 'All actions executed'
+        },
+        monitor: {
+            'monitoring_started': 'Computing outcome metrics...',
+            'monitoring_completed': 'Outcome computation complete'
+        }
+    };
+
+    if (summaries[agent] && summaries[agent][event]) {
+        return summaries[agent][event];
+    }
+
+    // Fallback: use output/input summary if available
+    const summary = data.output_summary || data.input_summary;
+    if (summary && typeof summary === 'string') {
+        // Clean up technical details
+        return summary.replace(/JSON|error|failed|fetch/gi, '').trim() || 'Processing...';
+    }
+
+    return null;
+}
+
+function getEventStatus(eventType) {
+    if (eventType.includes('completed')) return 'completed';
+    if (eventType.includes('failed')) return 'failed';
+    if (eventType.includes('started')) return 'in-progress';
+    return 'pending';
 }
 
 // State Machine for UI
@@ -242,11 +337,33 @@ function resetUI() {
     liveBanner.classList.remove('complete');
     liveBanner.classList.add('running');
     liveBanner.innerText = 'Pipeline running… waiting for first agent output.';
-    
+
+    // Reset summary panel
+    const summaryPanel = document.getElementById('agent-summary-panel');
+    if (summaryPanel) summaryPanel.innerHTML = '';
+
+    // Hide technical logs by default
+    const logSection = document.getElementById('log-section');
+    if (logSection) logSection.classList.add('hidden');
+
     // Reset gauge
     const gaugeFill = document.getElementById('gauge-fill');
     gaugeFill.style.strokeDashoffset = 125;
 }
+
+// Toggle technical logs visibility
+document.addEventListener('DOMContentLoaded', () => {
+    const toggleBtn = document.getElementById('toggle-logs');
+    if (toggleBtn) {
+        toggleBtn.addEventListener('click', () => {
+            const logSection = document.getElementById('log-section');
+            if (logSection) {
+                logSection.classList.toggle('hidden');
+                toggleBtn.innerText = logSection.classList.contains('hidden') ? 'Show Technical Logs' : 'Hide Technical Logs';
+            }
+        });
+    }
+});
 
 function normalizeActionKey(raw) {
     return (raw || '').toString().trim().toLowerCase().replace(/\s+/g, '-');

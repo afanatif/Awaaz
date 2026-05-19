@@ -12,6 +12,7 @@
     <div class="bg-grid" aria-hidden="true"></div>
     <div class="bg-orb orb-1" aria-hidden="true"></div>
     <div class="bg-orb orb-2" aria-hidden="true"></div>
+    <div class="bg-orb orb-3" aria-hidden="true"></div>
     <div class="app-container">
         <!-- Header -->
         <header>
@@ -215,9 +216,15 @@
                         </div>
                     </section>
 
-                    <section class="panel log-section">
+                    <section class="panel summary-section">
+                        <h2>Agent Progress</h2>
+                        <div id="agent-summary-panel" class="agent-summary-panel"></div>
+                    </section>
+
+                    <section class="panel log-section hidden" id="log-section">
                         <div class="log-header">
                             <h2>Audit Trail</h2>
+                            <button id="toggle-logs" class="toggle-btn">Show Technical Logs</button>
                             <div class="log-filters">
                                 <span class="filter active" data-agent="all">All</span>
                                 <span class="filter" data-agent="ingestion">Ingestion</span>
